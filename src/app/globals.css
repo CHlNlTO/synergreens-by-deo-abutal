@@ -1,15 +1,136 @@
 @import "tailwindcss";
 
+@layer theme, base, components, utilities;
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@theme {
+  /* Typography */
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-heading: var(--font-montserrat), system-ui, sans-serif;
+
+  /* Spacing */
+  --spacing: 0.25rem;
+
+  /* Breakpoints */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* Border radius */
+  --radius-sm: 0.125rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-4xl: 2rem;
+  --radius-full: 9999px;
+
+  /* Colors - Primary (greens) */
+  --color-primary-50: oklch(0.97 0.03 145);
+  --color-primary-100: oklch(0.95 0.05 145);
+  --color-primary-200: oklch(0.9 0.1 148);
+  --color-primary-300: oklch(0.85 0.15 148);
+  --color-primary-400: oklch(0.8 0.18 150);
+  --color-primary-500: oklch(0.76 0.2 150);
+  --color-primary-600: oklch(0.7 0.18 150);
+  --color-primary-700: oklch(0.65 0.16 150);
+  --color-primary-800: oklch(0.55 0.13 150);
+  --color-primary-900: oklch(0.45 0.1 150);
+  --color-primary-950: oklch(0.35 0.07 150);
+
+  /* Colors - Secondary (earthy tones) */
+  --color-secondary-50: oklch(0.97 0.03 95);
+  --color-secondary-100: oklch(0.95 0.06 95);
+  --color-secondary-200: oklch(0.9 0.12 95);
+  --color-secondary-300: oklch(0.85 0.18 95);
+  --color-secondary-400: oklch(0.8 0.22 95);
+  --color-secondary-500: oklch(0.75 0.24 95);
+  --color-secondary-600: oklch(0.68 0.22 95);
+  --color-secondary-700: oklch(0.6 0.18 95);
+  --color-secondary-800: oklch(0.5 0.15 95);
+  --color-secondary-900: oklch(0.4 0.12 95);
+  --color-secondary-950: oklch(0.3 0.08 95);
+
+  /* Colors - Accent (amber/gold tones) */
+  --color-accent-50: oklch(0.97 0.03 85);
+  --color-accent-100: oklch(0.95 0.06 85);
+  --color-accent-200: oklch(0.9 0.12 85);
+  --color-accent-300: oklch(0.85 0.18 85);
+  --color-accent-400: oklch(0.8 0.22 85);
+  --color-accent-500: oklch(0.75 0.24 85);
+  --color-accent-600: oklch(0.68 0.22 85);
+  --color-accent-700: oklch(0.6 0.18 85);
+  --color-accent-800: oklch(0.5 0.15 85);
+  --color-accent-900: oklch(0.4 0.12 85);
+  --color-accent-950: oklch(0.3 0.08 85);
+
+  /* Colors - Neutral */
+  --color-neutral-50: oklch(0.98 0.003 var(--tw-hue, 0));
+  --color-neutral-100: oklch(0.96 0.006 var(--tw-hue, 0));
+  --color-neutral-200: oklch(0.91 0.01 var(--tw-hue, 0));
+  --color-neutral-300: oklch(0.84 0.013 var(--tw-hue, 0));
+  --color-neutral-400: oklch(0.74 0.013 var(--tw-hue, 0));
+  --color-neutral-500: oklch(0.64 0.013 var(--tw-hue, 0));
+  --color-neutral-600: oklch(0.54 0.01 var(--tw-hue, 0));
+  --color-neutral-700: oklch(0.44 0.009 var(--tw-hue, 0));
+  --color-neutral-800: oklch(0.34 0.006 var(--tw-hue, 0));
+  --color-neutral-900: oklch(0.24 0.004 var(--tw-hue, 0));
+  --color-neutral-950: oklch(0.14 0.002 var(--tw-hue, 0));
+
+  /* Box Shadows */
+  --shadow-soft: 0 2px 15px -3px rgba(0, 0, 0, 0.07),
+    0 10px 20px -2px rgba(0, 0, 0, 0.04);
+
+  /* Animation Keyframes */
+  --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
+  --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-white text-neutral-900 font-sans;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading font-bold;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,8 +140,25 @@
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-in-out;
+  }
+
+  .animate-bounce-slow {
+    animation: bounce 3s ease-in-out infinite;
+  }
+}
+
+/* Backgrounds */
+.bg-hero-pattern {
+  background-image: url("/images/hero-bg.jpg");
+}
+
+.bg-leaf-pattern {
+  background-image: url("/images/leaf-pattern.svg");
 }
