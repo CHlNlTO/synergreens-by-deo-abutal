@@ -11,7 +11,7 @@ export const metadata = {
     "Premium health and wellness products by Deo Abutal. Explore our range of natural supplements and powdered drinks for optimal health.",
 };
 
-const HomePage = () => {
+export default function HomePage() {
   return (
     <main>
       {/* Hero section */}
@@ -373,6 +373,4 @@ const HomePage = () => {
       </section>
     </main>
   );
-};
-
-export default HomePage;
+}
