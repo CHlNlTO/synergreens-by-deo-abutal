@@ -4,13 +4,6 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { testimonials, products } from "@/lib/data";
 
-// Note: This would normally be in a separate metadata.ts file since this is a client component
-export const testimonialsMetadata = {
-  title: "Customer Testimonials",
-  description:
-    "Read success stories and experiences from our customers who have transformed their health with Synergreens products.",
-};
-
 export default function TestimonialsPage() {
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");

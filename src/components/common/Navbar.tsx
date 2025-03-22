@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { NavItem } from "@/types/product";
+import { NavItem } from "../../types/product";
 
 interface NavbarProps {
   items: NavItem[];

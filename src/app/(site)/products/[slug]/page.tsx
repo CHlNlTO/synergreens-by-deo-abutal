@@ -3,40 +3,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { products, testimonials } from "@/lib/data";
-import { Metadata } from "next";
 
-interface ProductPageProps {
-  params: {
-    slug: string;
-  };
-}
-
-export async function generateMetadata({
+export default async function ProductPage({
   params,
-}: ProductPageProps): Promise<Metadata> {
-  const product = products.find((p) => p.slug === params.slug);
-
-  if (!product) {
-    return {
-      title: "Product Not Found",
-      description: "The requested product could not be found.",
-    };
-  }
-
-  return {
-    title: `${product.name} - Synergreens`,
-    description: product.shortDescription,
-  };
-}
-
-export async function generateStaticParams() {
-  return products.map((product) => ({
-    slug: product.slug,
-  }));
-}
-
-export default function ProductPage({ params }: ProductPageProps) {
-  const product = products.find((p) => p.slug === params.slug);
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const resolvedParams = await params;
+  const product = products.find((p) => p.slug === resolvedParams.slug);
 
   if (!product) {
     notFound();
@@ -153,7 +127,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                   New Product
                 </span>
               )}
-              {product.categories.map((category) => (
+              {product.categories.map((category: string) => (
                 <span
                   key={category}
                   className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-800"
@@ -214,7 +188,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                 Key Benefits:
               </h3>
               <ul className="space-y-2">
-                {product.benefits.map((benefit, index) => (
+                {product.benefits.map((benefit: string, index: number) => (
                   <li key={index} className="flex items-start">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -245,39 +219,51 @@ export default function ProductPage({ params }: ProductPageProps) {
 
               {product.availableSizes && (
                 <div className="space-y-3 mb-6">
-                  {product.availableSizes.map((size, index) => (
-                    <div key={index} className="flex items-center">
-                      <input
-                        type="radio"
-                        id={`size-${index}`}
-                        name="package-size"
-                        defaultChecked={index === 0}
-                        className="h-4 w-4 text-primary-600 focus:ring-primary-500"
-                      />
-                      <label htmlFor={`size-${index}`} className="ml-3 flex-1">
-                        <span className="block text-sm font-medium text-neutral-700">
-                          {size.size}
-                        </span>
-                      </label>
-                      <div>
-                        {size.discountedPrice ? (
-                          <div className="flex items-center">
+                  {product.availableSizes.map(
+                    (
+                      size: {
+                        size: string;
+                        price: number;
+                        discountedPrice?: number;
+                      },
+                      index: number
+                    ) => (
+                      <div key={index} className="flex items-center">
+                        <input
+                          type="radio"
+                          id={`size-${index}`}
+                          name="package-size"
+                          defaultChecked={index === 0}
+                          className="h-4 w-4 text-primary-600 focus:ring-primary-500"
+                        />
+                        <label
+                          htmlFor={`size-${index}`}
+                          className="ml-3 flex-1"
+                        >
+                          <span className="block text-sm font-medium text-neutral-700">
+                            {size.size}
+                          </span>
+                        </label>
+                        <div>
+                          {size.discountedPrice ? (
+                            <div className="flex items-center">
+                              <span className="text-lg font-bold text-primary-700">
+                                {product.currency}{" "}
+                                {size.discountedPrice.toLocaleString()}
+                              </span>
+                              <span className="ml-2 text-sm line-through text-neutral-500">
+                                {product.currency} {size.price.toLocaleString()}
+                              </span>
+                            </div>
+                          ) : (
                             <span className="text-lg font-bold text-primary-700">
-                              {product.currency}{" "}
-                              {size.discountedPrice.toLocaleString()}
-                            </span>
-                            <span className="ml-2 text-sm line-through text-neutral-500">
                               {product.currency} {size.price.toLocaleString()}
                             </span>
-                          </div>
-                        ) : (
-                          <span className="text-lg font-bold text-primary-700">
-                            {product.currency} {size.price.toLocaleString()}
-                          </span>
-                        )}
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  )}
                 </div>
               )}
 
@@ -411,47 +397,56 @@ export default function ProductPage({ params }: ProductPageProps) {
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {product.ingredients.map((ingredient, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-300"
-            >
-              <h3 className="text-lg font-semibold text-neutral-900 mb-2">
-                {ingredient.name}
-              </h3>
-              <p className="text-sm text-neutral-600 mb-4">
-                {ingredient.description}
-              </p>
-              <h4 className="text-sm font-medium text-neutral-800 mb-2">
-                Benefits:
-              </h4>
-              <ul className="space-y-1">
-                {ingredient.benefits.map((benefit, i) => (
-                  <li
-                    key={i}
-                    className="flex items-center text-sm text-neutral-600"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="h-4 w-4 text-primary-500 mr-2"
+          {product.ingredients.map(
+            (
+              ingredient: {
+                name: string;
+                description: string;
+                benefits: string[];
+              },
+              index: number
+            ) => (
+              <div
+                key={index}
+                className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow duration-300"
+              >
+                <h3 className="text-lg font-semibold text-neutral-900 mb-2">
+                  {ingredient.name}
+                </h3>
+                <p className="text-sm text-neutral-600 mb-4">
+                  {ingredient.description}
+                </p>
+                <h4 className="text-sm font-medium text-neutral-800 mb-2">
+                  Benefits:
+                </h4>
+                <ul className="space-y-1">
+                  {ingredient.benefits.map((benefit: string, i: number) => (
+                    <li
+                      key={i}
+                      className="flex items-center text-sm text-neutral-600"
                     >
-                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                      <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                    </svg>
-                    {benefit}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="h-4 w-4 text-primary-500 mr-2"
+                      >
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                      </svg>
+                      {benefit}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          )}
         </div>
       </section>
 
@@ -564,7 +559,7 @@ export default function ProductPage({ params }: ProductPageProps) {
             .filter(
               (p) =>
                 p.id !== product.id &&
-                p.categories.some((c) => product.categories.includes(c))
+                p.categories.some((c: string) => product.categories.includes(c))
             )
             .slice(0, 4)
             .map((relatedProduct) => (

@@ -206,101 +206,105 @@ export default function AboutPage() {
                   Achievements
                 </h3>
                 <ul className="space-y-3">
-                  {distributor.achievements.map((achievement, index) => (
-                    <li key={index} className="flex items-start">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="h-5 w-5 text-primary-600 mr-3 mt-0.5"
-                      >
-                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                      </svg>
-                      <span className="text-neutral-700">{achievement}</span>
-                    </li>
-                  ))}
+                  {distributor.achievements.map(
+                    (achievement: string, index: number) => (
+                      <li key={index} className="flex items-start">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="h-5 w-5 text-primary-600 mr-3 mt-0.5"
+                        >
+                          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <span className="text-neutral-700">{achievement}</span>
+                      </li>
+                    )
+                  )}
                 </ul>
               </div>
 
               {/* Social Links */}
               {distributor.socialLinks && (
                 <div className="flex space-x-4 mb-8">
-                  {distributor.socialLinks.map((link) => (
-                    <a
-                      key={link.platform}
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-white shadow-sm hover:shadow-md transition-shadow text-neutral-700 hover:text-primary-700"
-                    >
-                      {link.platform === "Facebook" && (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="20"
-                          height="20"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="h-5 w-5"
-                        >
-                          <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
-                        </svg>
-                      )}
-                      {link.platform === "Instagram" && (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="20"
-                          height="20"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="h-5 w-5"
-                        >
-                          <rect
-                            x="2"
-                            y="2"
+                  {distributor.socialLinks.map(
+                    (link: { platform: string; url: string }) => (
+                      <a
+                        key={link.platform}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-white shadow-sm hover:shadow-md transition-shadow text-neutral-700 hover:text-primary-700"
+                      >
+                        {link.platform === "Facebook" && (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
                             width="20"
                             height="20"
-                            rx="5"
-                            ry="5"
-                          ></rect>
-                          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                        </svg>
-                      )}
-                      {link.platform === "LinkedIn" && (
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="20"
-                          height="20"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="h-5 w-5"
-                        >
-                          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-                          <rect x="2" y="9" width="4" height="12"></rect>
-                          <circle cx="4" cy="4" r="2"></circle>
-                        </svg>
-                      )}
-                    </a>
-                  ))}
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="h-5 w-5"
+                          >
+                            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                          </svg>
+                        )}
+                        {link.platform === "Instagram" && (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="h-5 w-5"
+                          >
+                            <rect
+                              x="2"
+                              y="2"
+                              width="20"
+                              height="20"
+                              rx="5"
+                              ry="5"
+                            ></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                          </svg>
+                        )}
+                        {link.platform === "LinkedIn" && (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="h-5 w-5"
+                          >
+                            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                            <rect x="2" y="9" width="4" height="12"></rect>
+                            <circle cx="4" cy="4" r="2"></circle>
+                          </svg>
+                        )}
+                      </a>
+                    )
+                  )}
                 </div>
               )}
 

@@ -167,7 +167,7 @@ const HomePage = () => {
                 <ul className="space-y-3">
                   {distributor.achievements
                     .slice(0, 3)
-                    .map((achievement, index) => (
+                    .map((achievement: string, index: number) => (
                       <li key={index} className="flex items-start">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -232,68 +232,83 @@ const HomePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {testimonials
               .filter((t) => t.featured)
-              .map((testimonial) => (
-                <div
-                  key={testimonial.id}
-                  className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300"
-                >
-                  {/* Rating */}
-                  <div className="flex text-yellow-400 mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <svg
-                        key={i}
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill={i < testimonial.rating ? "currentColor" : "none"}
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="h-4 w-4"
-                      >
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                      </svg>
-                    ))}
-                  </div>
+              .map(
+                (testimonial: {
+                  id: string;
+                  name: string;
+                  role?: string;
+                  image?: string;
+                  content: string;
+                  rating: number;
+                  location: string;
+                  date: string;
+                  productId?: string;
+                  featured: boolean;
+                }) => (
+                  <div
+                    key={testimonial.id}
+                    className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-300"
+                  >
+                    {/* Rating */}
+                    <div className="flex text-yellow-400 mb-4">
+                      {[...Array(5)].map((_, i) => (
+                        <svg
+                          key={i}
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill={
+                            i < testimonial.rating ? "currentColor" : "none"
+                          }
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="h-4 w-4"
+                        >
+                          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                      ))}
+                    </div>
 
-                  {/* Testimonial content */}
-                  <p className="text-neutral-700 mb-6">
-                    &ldquo;{testimonial.content}&rdquo;
-                  </p>
+                    {/* Testimonial content */}
+                    <p className="text-neutral-700 mb-6">
+                      &ldquo;{testimonial.content}&rdquo;
+                    </p>
 
-                  {/* Customer info */}
-                  <div className="flex items-center">
-                    {testimonial.image ? (
-                      <Image
-                        src={testimonial.image}
-                        alt={testimonial.name}
-                        width={40}
-                        height={40}
-                        className="h-10 w-10 rounded-full object-cover mr-3"
-                      />
-                    ) : (
-                      <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center mr-3">
-                        <span className="text-primary-700 font-bold text-lg">
-                          {testimonial.name.charAt(0)}
-                        </span>
-                      </div>
-                    )}
-                    <div>
-                      <h4 className="font-medium text-neutral-900">
-                        {testimonial.name}
-                      </h4>
-                      <div className="flex items-center text-sm text-neutral-500">
-                        {testimonial.role && (
-                          <span className="mr-2">{testimonial.role}</span>
-                        )}
-                        <span>{testimonial.location}</span>
+                    {/* Customer info */}
+                    <div className="flex items-center">
+                      {testimonial.image ? (
+                        <Image
+                          src={testimonial.image}
+                          alt={testimonial.name}
+                          width={40}
+                          height={40}
+                          className="h-10 w-10 rounded-full object-cover mr-3"
+                        />
+                      ) : (
+                        <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center mr-3">
+                          <span className="text-primary-700 font-bold text-lg">
+                            {testimonial.name.charAt(0)}
+                          </span>
+                        </div>
+                      )}
+                      <div>
+                        <h4 className="font-medium text-neutral-900">
+                          {testimonial.name}
+                        </h4>
+                        <div className="flex items-center text-sm text-neutral-500">
+                          {testimonial.role && (
+                            <span className="mr-2">{testimonial.role}</span>
+                          )}
+                          <span>{testimonial.location}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                )
+              )}
           </div>
 
           <div className="mt-12 text-center">

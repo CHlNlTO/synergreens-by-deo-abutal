@@ -4,14 +4,6 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { distributor } from "@/lib/data";
 
-// Note: This would normally be in the page.tsx, but since we're using client components
-// we'll define it here and use it in the static metadata export in a separate file
-export const contactMetadata = {
-  title: "Contact Us",
-  description:
-    "Get in touch with Deo Abutal and the Synergreens team. Order products, inquire about distribution opportunities, or ask questions about our health supplements.",
-};
-
 export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: "",
@@ -114,8 +106,8 @@ export default function ContactPage() {
                   Thank You!
                 </h3>
                 <p className="text-neutral-700 mb-4">
-                  Your message has been sent successfully. We&apos;ll get back
-                  to you as soon as possible.
+                  Your message has been sent successfully. Well get back to you
+                  as soon as possible.
                 </p>
                 <button
                   onClick={() => setSubmitted(false)}
