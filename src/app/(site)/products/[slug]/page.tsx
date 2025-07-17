@@ -103,7 +103,7 @@ export default async function ProductPage({
       <section className="container mx-auto px-4 md:px-6 mb-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           {/* Product Image */}
-          <div className="sticky top-24">
+          
             <div className="bg-gradient-to-tr from-primary-50 to-primary-100 rounded-3xl p-8 flex items-center justify-center overflow-hidden">
               <Image
                 src={product.image}
@@ -113,7 +113,7 @@ export default async function ProductPage({
                 className="max-w-full h-auto object-contain"
                 priority
               />
-            </div>
+            
 
             {/* Badges */}
             <div className="flex flex-wrap gap-2 mt-4">
