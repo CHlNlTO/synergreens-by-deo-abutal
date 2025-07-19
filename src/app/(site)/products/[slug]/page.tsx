@@ -104,7 +104,8 @@ export default async function ProductPage({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           {/* Product Image */}
           
-            <div className="bg-gradient-to-tr from-primary-50 to-primary-100 rounded-3xl p-8 flex items-center justify-center overflow-hidden">
+          <div className="bg-gradient-to-tr from-primary-50 to-primary-100 rounded-3xl p-8 flex items-center justify-center overflow-hidden">
+            <div className="flex flex-col items-center">
               <Image
                 src={product.image}
                 alt={product.imageAlt}
@@ -116,25 +117,26 @@ export default async function ProductPage({
             
 
             {/* Badges */}
-            <div className="flex flex-wrap gap-2 mt-4">
-              {product.fdaRegistered && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
-                  FDA Registered
-                </span>
-              )}
-              {product.new && (
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-secondary-100 text-secondary-800">
-                  New Product
-                </span>
-              )}
-              {product.categories.map((category: string) => (
-                <span
-                  key={category}
-                  className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-800"
-                >
-                  {category}
-                </span>
-              ))}
+              <div className="flex flex-wrap gap-2 mt-4">
+                {product.fdaRegistered && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
+                    FDA Registered
+                  </span>
+                )}
+                {product.new && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-secondary-100 text-secondary-800">
+                    New Product
+                  </span>
+                )}
+                {product.categories.map((category: string) => (
+                  <span
+                    key={category}
+                    className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-800"
+                  >
+                    {category}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
 
