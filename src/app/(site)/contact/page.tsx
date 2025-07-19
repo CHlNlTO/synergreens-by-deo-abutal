@@ -37,10 +37,21 @@ export default function ContactPage() {
 
     // Simulate form submission with a timeout
     try {
-      // In a real application, you would submit the form data to your backend/API here
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const response = await fetch("../api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.error || "Something went wrong.");
+      }
+
       setSubmitted(true);
-      // Reset form after successful submission
       setFormData({
         name: "",
         email: "",
@@ -49,13 +60,10 @@ export default function ContactPage() {
         message: "",
         interest: "product-inquiry",
       });
-    } catch (err) {
+    } catch (err: any) {
       setError(
-        "An error occurred while submitting the form. Please try again."
+        err.message || "An error occurred while submitting the form. Please try again."
       );
-      console.log(err);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
