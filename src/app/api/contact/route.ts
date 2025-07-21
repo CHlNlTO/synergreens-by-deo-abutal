@@ -69,7 +69,7 @@ export async function POST(req: Request) {
 `,
     });
 
-    return Response.json({ success: true });
+    return Response.json({ success: true, data });
   } catch (error) {
     console.error("Resend Error:", error);
     return new Response(JSON.stringify({ success: false, error: "Failed to send email" }), {

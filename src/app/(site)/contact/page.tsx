@@ -60,10 +60,15 @@ export default function ContactPage() {
         message: "",
         interest: "product-inquiry",
       });
-    } catch (err: any) {
-      setError(
-        err.message || "An error occurred while submitting the form. Please try again."
-      );
+  } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Resend Error:", error.message);
+      } else {
+        console.error("Resend Error:", error);
+      }
+      return new Response(JSON.stringify({ success: false, error: "Failed to send email" }), {
+        status: 500,
+      });
     }
   };
 
