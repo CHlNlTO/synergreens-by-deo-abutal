@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { distributor } from "@/lib/data";
+import Map from "@/components/contact/Map";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -60,15 +61,18 @@ export default function ContactPage() {
         message: "",
         interest: "product-inquiry",
       });
-  } catch (error: unknown) {
+    } catch (error: unknown) {
       if (error instanceof Error) {
         console.error("Resend Error:", error.message);
       } else {
         console.error("Resend Error:", error);
       }
-      return new Response(JSON.stringify({ success: false, error: "Failed to send email" }), {
-        status: 500,
-      });
+      return new Response(
+        JSON.stringify({ success: false, error: "Failed to send email" }),
+        {
+          status: 500,
+        }
+      );
     }
   };
 
@@ -531,38 +535,19 @@ export default function ContactPage() {
               Visit Our Office
             </h2>
             <p className="text-neutral-700">
-              We&apos;re conveniently located in the heart of Makati City. Drop
+              We&apos;re conveniently located in the heart of Tanauan City. Drop
               by during business hours to learn more about our products.
             </p>
           </div>
-          <div className="h-96 w-full bg-neutral-200 relative">
-            {/* This would be replaced with an actual map in a real implementation */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center p-6">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="48"
-                  height="48"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="h-12 w-12 text-neutral-400 mx-auto mb-4"
-                >
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                  <circle cx="12" cy="10" r="3"></circle>
-                </svg>
-                <p className="text-neutral-600">
-                  Map placeholder - In a real implementation, this would be
-                  replaced with a Google Maps or similar integration.
-                </p>
-              </div>
-            </div>
+          {/* Full-width responsive map */}
+          <div className="relative w-full h-96">
+            <Map />
           </div>
         </div>
       </section>
+
+      
+
 
       {/* Social Media section */}
       <section className="container mx-auto px-4 md:px-6">
