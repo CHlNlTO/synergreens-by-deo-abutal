@@ -2,26 +2,21 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import {
-  getCartItems,
-  removeFromCart,
-  clearCart,
-  updateCartQuantity,
-} from "@/lib/cart";
+import { getCartItems, removeFromCart, clearCart, updateCartQuantity } from "@/lib/cart";
 
 export default function CartSheetContent() {
   const [cartItems, setCartItems] = useState(getCartItems());
 
-  // 🔹 Listen for updates (add/remove/change)
   useEffect(() => {
     const updateCart = () => setCartItems(getCartItems());
     window.addEventListener("cart-updated", updateCart);
     return () => window.removeEventListener("cart-updated", updateCart);
   }, []);
 
-  const handleQuantityChange = (itemId: string, newQty: number) => {
-    if (newQty <= 0) return removeFromCart(itemId);
-    updateCartQuantity(itemId, newQty);
+  const handleQuantityChange = (id: string, newQuantity: number) => {
+    if (newQuantity < 1) return; // prevent going below 1
+    updateCartQuantity(id, newQuantity);
+    setCartItems(getCartItems());
   };
 
   const total = cartItems.reduce(
@@ -50,32 +45,35 @@ export default function CartSheetContent() {
             />
             <div>
               <p className="font-medium">{item.name}</p>
+              <p className="text-sm text-neutral-600">
+                {item.currency}
+                {item.price.toLocaleString()} × {item.quantity}
+              </p>
 
-              {/* Quantity controls */}
-              <div className="flex items-center gap-2 mt-1">
+              {/* Quantity Controls */}
+              <div className="flex items-center gap-2 mt-2">
                 <button
-                  onClick={() =>
-                    handleQuantityChange(item.id, item.quantity - 1)
-                  }
-                  className="w-6 h-6 flex items-center justify-center border rounded-full text-neutral-600 hover:bg-neutral-100"
+                  onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                  disabled={item.quantity === 1}
+                  className={`w-6 h-6 rounded-full border flex items-center justify-center text-sm font-bold transition 
+                    ${
+                      item.quantity === 1
+                        ? "text-neutral-400 border-neutral-200 "
+                        : "text-primary-700 border-primary-600 hover:bg-primary-50"
+                    }`}
                 >
                   −
                 </button>
-                <span className="text-sm font-medium">{item.quantity}</span>
+                <span className="w-6 text-center font-medium text-neutral-700">
+                  {item.quantity}
+                </span>
                 <button
-                  onClick={() =>
-                    handleQuantityChange(item.id, item.quantity + 1)
-                  }
-                  className="w-6 h-6 flex items-center justify-center border rounded-full text-neutral-600 hover:bg-neutral-100"
+                  onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                  className="w-6 h-6 rounded-full border border-primary-600 text-primary-700 flex items-center justify-center text-sm font-bold hover:bg-primary-50 transition"
                 >
                   +
                 </button>
               </div>
-
-              <p className="text-sm text-neutral-600 mt-1">
-                {item.currency}
-                {item.price.toLocaleString()} × {item.quantity}
-              </p>
             </div>
           </div>
 
@@ -88,7 +86,6 @@ export default function CartSheetContent() {
         </div>
       ))}
 
-      {/* Total */}
       <div className="flex justify-between pt-3 border-t">
         <p className="font-semibold">Total</p>
         <p className="font-semibold">
@@ -97,15 +94,14 @@ export default function CartSheetContent() {
         </p>
       </div>
 
-      {/* Proceed to checkout (disabled) */}
+      {/* Proceed to Checkout (disabled for now) */}
       <button
         disabled
-        className="w-full mt-4 px-5 py-2 bg-primary-400 text-white rounded-full font-medium opacity-60 cursor-not-allowed"
+        className="w-full mt-4 px-5 py-2 bg-primary-500/50 text-white rounded-full font-medium cursor-not-allowed"
       >
         Proceed to Checkout
       </button>
 
-      {/* Clear cart */}
       <button
         onClick={clearCart}
         className="w-full mt-3 px-5 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full font-medium transition"
