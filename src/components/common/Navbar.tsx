@@ -4,8 +4,9 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { NavItem } from "../../types/product";
 import { ShoppingCart } from "lucide-react";
+import toast from "react-hot-toast";
+import { getCartItems } from "@/lib/cart";
 import {
   Sheet,
   SheetContent,
@@ -15,6 +16,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../ui/sheet";
+import CartSheetContent from "../Sheet/CartSheetContent";
+import { NavItem } from "../../types/product";
 
 interface NavbarProps {
   items: NavItem[];
@@ -24,15 +27,51 @@ const Navbar: React.FC<NavbarProps> = ({ items }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [cartCount, setCartCount] = useState(0);
+  const [isCartAnimating, setIsCartAnimating] = useState(false);
   const pathname = usePathname();
 
+  // Detect scroll
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Listen for cart updates
+  const updateCart = (event: CustomEvent<{ productName?: string }>) => {
+    const items = getCartItems() || [];
+    const total = items.reduce((sum, item) => sum + item.quantity, 0);
+    setCartCount(total);
+  
+    // ✅ Only animate and show toast when a product is added
+    if (event.detail?.productName) {
+      setIsCartAnimating(true);
+      setTimeout(() => setIsCartAnimating(false), 400);
+  
+      toast.success(`${event.detail.productName} added to your cart!`, {
+        duration: 2000,
+        style: {
+          background: "#16a34a",
+          color: "#fff",
+          borderRadius: "9999px",
+          fontWeight: 500,
+        },
+      });
+    }
+  };
+  
+  
+  
+  useEffect(() => {
+    const handleCartEvent = (e: Event) => updateCart(e as CustomEvent<{ productName?: string }>);
+    window.addEventListener("cart-updated", handleCartEvent);
+    updateCart(new CustomEvent("cart-updated")); // initialize count
+  
+    return () => window.removeEventListener("cart-updated", handleCartEvent);
+  }, []);
+  
+  
 
   const handleDropdownToggle = (label: string) => {
     setActiveDropdown((prev) => (prev === label ? null : label));
@@ -61,7 +100,7 @@ const Navbar: React.FC<NavbarProps> = ({ items }) => {
             />
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* -------- Desktop Navigation -------- */}
           <nav className="hidden lg:flex items-center space-x-1">
             {items.map((item) => (
               <div key={item.label} className="relative group">
@@ -106,7 +145,6 @@ const Navbar: React.FC<NavbarProps> = ({ items }) => {
                   </Link>
                 )}
 
-                {/* Dropdown Menu */}
                 {item.subItems && (
                   <div
                     className={`absolute left-0 mt-2 w-56 rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 transition-all duration-200 ${
@@ -133,14 +171,24 @@ const Navbar: React.FC<NavbarProps> = ({ items }) => {
             ))}
           </nav>
 
-          {/* ----------- Desktop Cart + CTA ----------- */}
+          {/* -------- Desktop Cart + CTA -------- */}
           <div className="hidden lg:flex items-center space-x-4">
             <Sheet>
               <SheetTrigger asChild>
-                <button className="relative p-2 rounded-full hover:bg-primary-50 transition-colors">
-                  <ShoppingCart className="h-6 w-6 text-neutral-700 hover:text-primary-600" />
+                <button
+                  className={`relative p-2 rounded-full hover:bg-primary-50 transition-transform ${
+                    isCartAnimating ? "scale-140" : ""
+                  }`}
+                >
+                  <ShoppingCart className="h-6 w-6 text-neutral-700 hover:text-primary-600 transition-colors" />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-primary-600 text-white text-xs font-semibold rounded-full w-5 h-5 flex items-center justify-center">
+                      {cartCount}
+                    </span>
+                  )}
                 </button>
               </SheetTrigger>
+
               <SheetContent side="right" className="w-[90%] sm:max-w-sm bg-white">
                 <SheetHeader>
                   <SheetTitle>Your Cart</SheetTitle>
@@ -149,25 +197,7 @@ const Navbar: React.FC<NavbarProps> = ({ items }) => {
                   </SheetDescription>
                 </SheetHeader>
 
-                <div className="mt-4 space-y-4">
-                  <div className="flex items-center justify-between border-b pb-2">
-                    <span className="text-sm font-medium">Product 1</span>
-                    <span className="text-sm text-neutral-600">$25.00</span>
-                  </div>
-                  <div className="flex items-center justify-between border-b pb-2">
-                    <span className="text-sm font-medium">Product 2</span>
-                    <span className="text-sm text-neutral-600">$40.00</span>
-                  </div>
-                </div>
-
-                <SheetFooter className="mt-6">
-                  <Link
-                    href="/contact"
-                    className="w-full inline-flex items-center justify-center px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-full transition-colors"
-                  >
-                    Proceed to Checkout
-                  </Link>
-                </SheetFooter>
+                <CartSheetContent />
               </SheetContent>
             </Sheet>
 
@@ -179,15 +209,24 @@ const Navbar: React.FC<NavbarProps> = ({ items }) => {
             </Link>
           </div>
 
-          {/* ----------- Mobile Buttons (Menu + Cart) ----------- */}
+          {/* -------- Mobile Buttons -------- */}
           <div className="flex lg:hidden items-center space-x-2">
-            {/* Mobile Cart Sheet */}
             <Sheet>
               <SheetTrigger asChild>
-                <button className="p-2 rounded-md text-neutral-700 hover:text-primary-600 hover:bg-primary-50">
+                <button
+                  className={`relative p-2 rounded-md text-neutral-700 hover:text-primary-600 hover:bg-primary-50 transition-transform ${
+                    isCartAnimating ? "scale-140" : ""
+                  }`}
+                >
                   <ShoppingCart className="h-6 w-6" />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-primary-600 text-white text-xs font-semibold rounded-full w-5 h-5 flex items-center justify-center">
+                      {cartCount}
+                    </span>
+                  )}
                 </button>
               </SheetTrigger>
+
               <SheetContent side="right" className="w-[90%] sm:max-w-sm bg-white">
                 <SheetHeader>
                   <SheetTitle>Your Cart</SheetTitle>
@@ -196,16 +235,7 @@ const Navbar: React.FC<NavbarProps> = ({ items }) => {
                   </SheetDescription>
                 </SheetHeader>
 
-                <div className="mt-4 space-y-4">
-                  <div className="flex items-center justify-between border-b pb-2">
-                    <span className="text-sm font-medium">Product 1</span>
-                    <span className="text-sm text-neutral-600">$25.00</span>
-                  </div>
-                  <div className="flex items-center justify-between border-b pb-2">
-                    <span className="text-sm font-medium">Product 2</span>
-                    <span className="text-sm text-neutral-600">$40.00</span>
-                  </div>
-                </div>
+                <CartSheetContent />
 
                 <SheetFooter className="mt-6">
                   <Link
@@ -218,7 +248,7 @@ const Navbar: React.FC<NavbarProps> = ({ items }) => {
               </SheetContent>
             </Sheet>
 
-            {/* Mobile Menu Button */}
+            {/* Menu toggle unchanged */}
             <button
               className="p-2 rounded-md text-neutral-700 hover:text-primary-600 hover:bg-primary-50"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -262,7 +292,7 @@ const Navbar: React.FC<NavbarProps> = ({ items }) => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* -------- Mobile Menu -------- */}
       <div
         className={`lg:hidden absolute top-full left-0 right-0 bg-white shadow-md transition-all duration-300 ${
           isMenuOpen ? "max-h-screen py-4" : "max-h-0 overflow-hidden py-0"
@@ -300,6 +330,7 @@ const Navbar: React.FC<NavbarProps> = ({ items }) => {
                         <polyline points="6 9 12 15 18 9" />
                       </svg>
                     </button>
+
                     <div
                       className={`mt-1 ml-4 border-l-2 border-primary-100 pl-4 space-y-1 transition-all duration-200 ${
                         activeDropdown === item.label

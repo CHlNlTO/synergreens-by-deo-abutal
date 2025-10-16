@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { products, testimonials } from "@/lib/data";
+import AddToCartButton from "@/components/products/AddToCartButton";
 
 export default async function ProductPage({
   params,
@@ -103,7 +104,7 @@ export default async function ProductPage({
       <section className="container mx-auto px-4 md:px-6 mb-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           {/* Product Image */}
-          
+
           <div className="bg-gradient-to-tr from-primary-50 to-primary-100 rounded-3xl p-8 flex items-center justify-center overflow-hidden">
             <div className="flex flex-col items-center">
               <Image
@@ -114,9 +115,8 @@ export default async function ProductPage({
                 className="max-w-full h-auto object-contain"
                 priority
               />
-            
 
-            {/* Badges */}
+              {/* Badges */}
               <div className="flex flex-wrap gap-2 mt-4">
                 {product.fdaRegistered && (
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
@@ -219,77 +219,52 @@ export default async function ProductPage({
                 Choose Package:
               </h3>
 
-              {product.availableSizes && (
+              {product.variants && (
                 <div className="space-y-3 mb-6">
-                  {product.availableSizes.map(
-                    (
-                      size: {
-                        size: string;
-                        price: number;
-                        discountedPrice?: number;
-                      },
-                      index: number
-                    ) => (
-                      <div key={index} className="flex items-center">
-                        <input
-                          type="radio"
-                          id={`size-${index}`}
-                          name="package-size"
-                          defaultChecked={index === 0}
-                          className="h-4 w-4 text-primary-600 focus:ring-primary-500"
-                        />
-                        <label
-                          htmlFor={`size-${index}`}
-                          className="ml-3 flex-1"
-                        >
-                          <span className="block text-sm font-medium text-neutral-700">
-                            {size.size}
-                          </span>
-                        </label>
-                        <div>
-                          {size.discountedPrice ? (
-                            <div className="flex items-center">
-                              <span className="text-lg font-bold text-primary-700">
-                                {product.currency}{" "}
-                                {size.discountedPrice.toLocaleString()}
-                              </span>
-                              <span className="ml-2 text-sm line-through text-neutral-500">
-                                {product.currency} {size.price.toLocaleString()}
-                              </span>
-                            </div>
-                          ) : (
+                  {product.variants.map((variant, index) => (
+                    <div key={variant.id} className="flex items-center">
+                      <input
+                        type="radio"
+                        id={`variant-${index}`}
+                        name="package-variant"
+                        value={variant.id} // ✅ add this line!
+                        defaultChecked={index === 0}
+                        className="h-4 w-4 text-primary-600 focus:ring-primary-500"
+                      />
+                      <label
+                        htmlFor={`variant-${index}`}
+                        className="ml-3 flex-1"
+                      >
+                        <span className="block text-sm font-medium text-neutral-700">
+                          {variant.label}
+                        </span>
+                      </label>
+                      <div>
+                        {variant.discountedPrice ? (
+                          <div className="flex items-center">
                             <span className="text-lg font-bold text-primary-700">
-                              {product.currency} {size.price.toLocaleString()}
+                              {product.currency}{" "}
+                              {variant.discountedPrice.toLocaleString()}
                             </span>
-                          )}
-                        </div>
+                            <span className="ml-2 text-sm line-through text-neutral-500">
+                              {product.currency}{" "}
+                              {variant.price.toLocaleString()}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-lg font-bold text-primary-700">
+                            {product.currency} {variant.price.toLocaleString()}
+                          </span>
+                        )}
                       </div>
-                    )
-                  )}
+                    </div>
+                  ))}
                 </div>
               )}
 
               {/* Order buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <button className="flex-1 inline-flex items-center justify-center px-5 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-full transition-colors shadow-md">
-                  Add to Cart
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="ml-2 h-5 w-5"
-                  >
-                    <circle cx="9" cy="21" r="1"></circle>
-                    <circle cx="20" cy="21" r="1"></circle>
-                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                  </svg>
-                </button>
+                <AddToCartButton product={product} />
                 <Link
                   href="/contact"
                   className="flex-1 inline-flex items-center justify-center px-5 py-3 border border-primary-600 text-primary-700 hover:bg-primary-50 font-medium rounded-full transition-colors"
