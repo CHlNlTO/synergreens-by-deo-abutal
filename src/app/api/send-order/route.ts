@@ -3,9 +3,34 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// 🧾 Define CartItem interface
+interface CartItem {
+  id: string;
+  name: string;
+  quantity: number;
+  price: number;
+  discountedPrice?: number;
+  currency?: string;
+  variantLabel?: string;
+}
+
+// 🧾 Define OrderData interface
+interface OrderData {
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  barangay: string;
+  city: string;
+  province: string;
+  postal: string;
+  cartItems: CartItem[];
+  total: number;
+}
+
 export async function POST(req: Request) {
   try {
-    const data = await req.json();
+    const data: OrderData = await req.json();
     const {
       name,
       email,
@@ -50,7 +75,7 @@ export async function POST(req: Request) {
             <tbody>
               ${cartItems
                 .map(
-                  (item: any) => `
+                  (item: CartItem) => `
                 <tr>
                   <td style="padding: 10px; border-bottom: 1px solid #f3f4f6;">
                     <strong>${item.name}</strong> ${
@@ -61,7 +86,7 @@ export async function POST(req: Request) {
                     ${item.quantity}
                   </td>
                   <td style="padding: 10px; border-bottom: 1px solid #f3f4f6;">
-                    ₱${((item.discountedPrice ?? item.price) * item.quantity).toLocaleString()}
+                    ₱${((item.discountedPrice ?? item.price) * item.quantity).toLocaleString("en-PH")}
                   </td>
                 </tr>
               `
@@ -71,7 +96,7 @@ export async function POST(req: Request) {
           </table>
 
           <div style="text-align: right; margin-top: 16px; font-size: 16px;">
-            <strong>Total:</strong> ₱${total.toLocaleString()}
+            <strong>Total:</strong> ₱${total.toLocaleString("en-PH")}
           </div>
         </div>
 

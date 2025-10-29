@@ -10,11 +10,25 @@ import {
   clearCart,
 } from "@/lib/cart";
 
+// 🧾 Define a CartItem type
+interface CartItem {
+  id: string;
+  name: string;
+  image: string;
+  price: number;
+  discountedPrice?: number;
+  quantity: number;
+  currency: string;
+  variantLabel?: string;
+}
+
 export default function CheckoutPage() {
-  const [cartItems, setCartItems] = useState<any[]>([]); // start empty to avoid SSR mismatch
+  // ✅ Now we use a strongly typed array
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isClient, setIsClient] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const formRef = useRef<HTMLFormElement | null>(null);
+
 
   // Form state
   const [name, setName] = useState("");
