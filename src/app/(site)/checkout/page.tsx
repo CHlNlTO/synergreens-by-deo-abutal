@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import {
@@ -14,6 +14,7 @@ export default function CheckoutPage() {
   const [cartItems, setCartItems] = useState<any[]>([]); // start empty to avoid SSR mismatch
   const [isClient, setIsClient] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const formRef = useRef<HTMLFormElement | null>(null);
 
   // Form state
   const [name, setName] = useState("");
@@ -53,16 +54,29 @@ export default function CheckoutPage() {
     setPostal("");
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (cartItems.length === 0) {
-      toast.error("Your cart is empty.");
+    // If we have a form ref, use native validation first (shows browser messages)
+    const formEl = formRef.current;
+    if (formEl && !formEl.checkValidity()) {
+      formEl.reportValidity();
       return;
     }
 
-    if (!name || !email || !phone || !address || !city || !postal) {
-      toast.error("Please fill required fields.");
+    // Extra JS validation (in case)
+    if (
+      cartItems.length === 0 ||
+      !name ||
+      !email ||
+      !phone ||
+      !address ||
+      !barangay ||
+      !city ||
+      !province ||
+      !postal
+    ) {
+      toast.error("Please fill all required fields.");
       return;
     }
 
@@ -98,11 +112,19 @@ export default function CheckoutPage() {
 
       if (emailRes.ok && sheetRes.ok) {
         toast.success("✅ Order sent and saved!", { id: toastId });
-        clearCart();
+        clearCart(); // this should dispatch 'cart-updated'
         setCartItems([]);
         resetForm();
       } else {
-        toast.error("Failed to send or save order.", { id: toastId });
+        // try to show helpful server message if available
+        const [emailText, sheetText] = await Promise.all([
+          emailRes.text().catch(() => ""),
+          sheetRes.text().catch(() => ""),
+        ]);
+        const msg = [emailText, sheetText].filter(Boolean).join(" / ");
+        toast.error(`Failed to send or save order. ${msg ? `Server: ${msg}` : ""}`, {
+          id: toastId,
+        });
       }
     } catch (err) {
       console.error("Order send error:", err);
@@ -120,165 +142,178 @@ export default function CheckoutPage() {
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
             Checkout
           </h1>
-          <p className="text-gray-600">
-            Complete your order in just a few steps
-          </p>
+          <p className="text-gray-600">Complete your order in just a few steps</p>
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+        {/* IMPORTANT: single form wrapping both columns so the Place Order button submits form */}
+        <form
+          ref={formRef}
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch"
+        >
           {/* Left column */}
           <div className="lg:col-span-2 flex flex-col gap-6 h-full">
-            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-              {/* Contact info */}
-              <div className="bg-white rounded-2xl shadow-md p-6 md:p-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
-                    1
-                  </div>
-                  <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-                    Contact Information
-                  </h2>
+            {/* Contact info */}
+            <div className="bg-white rounded-2xl shadow-md p-6 md:p-8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
+                  1
+                </div>
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+                  Contact Information
+                </h2>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Full Name *
+                  </label>
+                  <input
+                    name="fullName"
+                    type="text"
+                    placeholder="John Doe"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  />
                 </div>
 
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Full Name *
+                      Email Address *
                     </label>
                     <input
+                      name="email"
+                      type="email"
+                      placeholder="john@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Phone Number *
+                    </label>
+                    <input
+                      name="phone"
+                      type="tel"
+                      placeholder="+63 912 345 6789"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Shipping */}
+            <div className="bg-white rounded-2xl shadow-md p-6 md:p-8 mt-auto">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
+                  2
+                </div>
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+                  Shipping Address
+                </h2>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Street Address *
+                  </label>
+                  <textarea
+                    name="address"
+                    placeholder="Block 5 Lot 4, San Sebastian Village"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                    rows={2}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Barangay *
+                  </label>
+                  <input
+                    name="barangay"
+                    type="text"
+                    placeholder="Darasa"
+                    value={barangay}
+                    onChange={(e) => setBarangay(e.target.value)}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      City *
+                    </label>
+                    <input
+                      name="city"
                       type="text"
-                      placeholder="John Doe"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Tanauan"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      required
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Email Address *
-                      </label>
-                      <input
-                        type="email"
-                        placeholder="john@example.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Phone Number *
-                      </label>
-                      <input
-                        type="tel"
-                        placeholder="+63 912 345 6789"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Shipping */}
-              <div className="bg-white rounded-2xl shadow-md p-6 md:p-8 mt-auto">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
-                    2
-                  </div>
-                  <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-                    Shipping Address
-                  </h2>
-                </div>
-
-                <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Street Address *
-                    </label>
-                    <textarea
-                      placeholder="Block 5 Lot 4, San Sebastian Village"
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-                      rows={2}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Barangay *
+                      Province *
                     </label>
                     <input
+                      name="province"
                       type="text"
-                      placeholder="Darasa"
-                      value={barangay}
-                      onChange={(e) => setBarangay(e.target.value)}
+                      placeholder="Batangas"
+                      value={province}
+                      onChange={(e) => setProvince(e.target.value)}
+                      required
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        City *
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Tanauan"
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Province
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Batangas"
-                        value={province}
-                        onChange={(e) => setProvince(e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Postal Code *
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="4232"
-                        value={postal}
-                        onChange={(e) => setPostal(e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 mt-2">
-                    <input
-                      id="saveAddress"
-                      type="checkbox"
-                      className="h-4 w-4 rounded text-blue-600 focus:ring-blue-500 border-gray-300"
-                    />
-                    <label
-                      htmlFor="saveAddress"
-                      className="text-sm text-gray-600"
-                    >
-                      Save this address for future orders
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Postal Code *
                     </label>
+                    <input
+                      name="postal"
+                      type="text"
+                      placeholder="4232"
+                      value={postal}
+                      onChange={(e) => setPostal(e.target.value)}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    />
                   </div>
                 </div>
+
+                <div className="flex items-center gap-2 mt-2">
+                  <input
+                    id="saveAddress"
+                    type="checkbox"
+                    className="h-4 w-4 rounded text-blue-600 focus:ring-blue-500 border-gray-300"
+                  />
+                  <label htmlFor="saveAddress" className="text-sm text-gray-600">
+                    Save this address for future orders
+                  </label>
+                </div>
               </div>
-            </form>
+            </div>
           </div>
 
           {/* Right column: Order summary */}
@@ -345,10 +380,7 @@ export default function CheckoutPage() {
                               <button
                                 onClick={() =>
                                   item.quantity > 1
-                                    ? updateCartQuantity(
-                                        item.id,
-                                        item.quantity - 1
-                                      )
+                                    ? updateCartQuantity(item.id, item.quantity - 1)
                                     : null
                                 }
                                 className="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-gray-900 disabled:opacity-40 disabled:cursor-not-allowed"
@@ -360,9 +392,7 @@ export default function CheckoutPage() {
                                 {item.quantity}
                               </span>
                               <button
-                                onClick={() =>
-                                  updateCartQuantity(item.id, item.quantity + 1)
-                                }
+                                onClick={() => updateCartQuantity(item.id, item.quantity + 1)}
                                 className="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-gray-900"
                               >
                                 +
@@ -379,10 +409,7 @@ export default function CheckoutPage() {
 
                           <p className="text-sm font-semibold text-gray-900 mt-2">
                             {item.currency}
-                            {(
-                              (item.discountedPrice ?? item.price) *
-                              item.quantity
-                            ).toLocaleString()}
+                            {(((item.discountedPrice ?? item.price) * item.quantity) as number).toLocaleString()}
                           </p>
                         </div>
                       </div>
@@ -407,9 +434,7 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="flex justify-between items-center py-4 border-t-2 border-gray-900">
-                    <span className="text-lg font-bold text-gray-900">
-                      Total
-                    </span>
+                    <span className="text-lg font-bold text-gray-900">Total</span>
                     <span className="text-2xl font-bold text-gray-900">
                       {cartItems[0]?.currency}
                       {total.toLocaleString(undefined, {
@@ -419,12 +444,11 @@ export default function CheckoutPage() {
                     </span>
                   </div>
 
+                  {/* This button submits the form because it is inside the form element */}
                   <button
-                    onClick={handleSubmit}
+                    type="submit"
                     disabled={isSubmitting}
-                    className={`w-full ${
-                      isSubmitting ? "opacity-70 cursor-not-allowed" : ""
-                    } bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0`}
+                    className={`w-full ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""} bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4 rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0`}
                   >
                     {isSubmitting ? "Sending order..." : "Place Order"}
                   </button>
@@ -436,7 +460,7 @@ export default function CheckoutPage() {
               )}
             </div>
           </div>
-        </div>
+        </form>
       </div>
     </main>
   );
