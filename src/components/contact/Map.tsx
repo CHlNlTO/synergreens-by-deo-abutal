@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import {
-  LoadScript,
+  LoadScriptNext,
   GoogleMap,
   Marker,
   DirectionsService,
   DirectionsRenderer,
 } from '@react-google-maps/api';
+
 
 const containerStyle = {
   width: '100%',
@@ -79,7 +80,7 @@ const Map = () => {
 
   return (
     <div className="relative w-full h-full">
-      <LoadScript googleMapsApiKey={apiKey} language="en" region="US">
+     <LoadScriptNext googleMapsApiKey={apiKey} language="en" region="US">
         <GoogleMap
           mapContainerStyle={containerStyle}
           center={destination}
@@ -107,7 +108,7 @@ const Map = () => {
             />
           )}
         </GoogleMap>
-      </LoadScript>
+      </LoadScriptNext>
 
       {/* Overlay button */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2">

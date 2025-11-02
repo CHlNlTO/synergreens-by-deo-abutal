@@ -1,7 +1,10 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Product } from "../../types/product";
+import AddToCartButton from "./AddToCartButton"; // ✅ Import your existing button
 
 interface ProductCardProps {
   product: Product;
@@ -25,6 +28,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
           />
         </Link>
+
         {/* Badges */}
         <div className="absolute top-4 left-4 flex flex-col gap-2">
           {product.new && (
@@ -42,6 +46,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
       {/* Product details */}
       <div className="p-5 flex flex-col flex-grow">
+        {/* Rating */}
         <div className="flex items-center mb-2">
           <div className="flex text-yellow-400">
             <svg
@@ -91,7 +96,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             )}
           </div>
 
-          {/* View details button */}
+          {/* View details icon */}
           <Link
             href={`/products/${product.slug}`}
             className="inline-flex items-center justify-center p-2 bg-primary-100 hover:bg-primary-200 text-primary-700 rounded-full transition-colors"
@@ -114,36 +119,23 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </Link>
         </div>
 
-        {/* Quick shop buttons (only if showDetails is true) */}
+        {/* Quick shop buttons */}
         {showDetails && (
-          <div className="mt-4 grid grid-cols-2 gap-2">
-            <button className="inline-flex items-center justify-center px-3 py-2 text-sm bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-4 w-4 mr-1"
-              >
-                <circle cx="9" cy="21" r="1"></circle>
-                <circle cx="20" cy="21" r="1"></circle>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-              </svg>
-              Add to Cart
-            </button>
-            <Link
-              href={`/products/${product.slug}`}
-              className="inline-flex items-center justify-center px-3 py-2 text-sm border border-primary-600 text-primary-700 hover:bg-primary-50 font-medium rounded-lg transition-colors"
-            >
-              View Details
-            </Link>
-          </div>
-        )}
+  <div className="mt-4 flex flex-col sm:flex-row gap-3">
+    <AddToCartButton
+      product={product}
+      className="flex-1 inline-flex items-center justify-center px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl shadow-md transition-colors"
+    />
+    <Link
+      href="/contact"
+      className="flex-1 inline-flex items-center justify-center px-5 py-2.5 border border-primary-600 text-primary-700 hover:bg-primary-50 font-medium rounded-xl shadow-md transition-colors"
+    >
+      Contact for Bulk
+    </Link>
+  </div>
+)}
+
+
       </div>
     </div>
   );

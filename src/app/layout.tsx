@@ -5,6 +5,7 @@ import "./globals.css";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import { navItems } from "@/lib/data";
+import { Toaster } from "react-hot-toast";
 
 // Define fonts
 const inter = Inter({
@@ -49,6 +50,7 @@ export default function RootLayout({
       <body className="font-sans antialiased min-h-screen flex flex-col">
         <Navbar items={navItems} />
         <div className="flex-grow">{children}</div>
+        <Toaster position="bottom-center" />
         <Footer navItems={navItems} />
       </body>
     </html>

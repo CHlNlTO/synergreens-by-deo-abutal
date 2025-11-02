@@ -139,17 +139,11 @@ export const products: Product[] = [
     tags: ["Detox", "Immune Boost", "Energy", "Green Foods"],
     rating: 4.8,
     reviewCount: 156,
-    availableSizes: [
-      {
-        size: "15 sachets",
-        price: 1200,
-      },
-      {
-        size: "30 sachets",
-        price: 2800,
-        discountedPrice: 2400,
-      },
-    ],
+    variants: [
+      { id: "15-sachets", label: "15 Sachets", price: 1200 },
+      { id: "30-sachets", label: "30 Sachets", price: 2800, discountedPrice: 2400 },
+    ]
+    
   },
   {
     id: "product-002",
@@ -227,17 +221,11 @@ export const products: Product[] = [
     tags: ["Antioxidant", "Skin Health", "Immunity", "Wellness"],
     rating: 4.9,
     reviewCount: 124,
-    availableSizes: [
-      {
-        size: "30 capsules",
-        price: 1580,
-      },
-      {
-        size: "60 capsules",
-        price: 2980,
-        discountedPrice: 2880,
-      },
-    ],
+    variants: [
+      { id: "30-capsules", label: "30 Capsules", price: 1580 },
+      { id: "60-capsules", label: "60 Capsules", price: 2980, discountedPrice: 2880 },
+    ]
+    
   },
   {
     id: "product-003",
@@ -348,17 +336,11 @@ export const products: Product[] = [
     tags: ["Brain Boost", "Energy", "Chocolate", "Kids"],
     rating: 4.7,
     reviewCount: 89,
-    availableSizes: [
-      {
-        size: "15 sachets",
-        price: 980,
-      },
-      {
-        size: "30 sachets",
-        price: 1880,
-        discountedPrice: 1780,
-      },
-    ],
+    variants: [
+      { id: "15-sachets", label: "15 Sachets", price: 980 },
+      { id: "30-sachets", label: "30 Sachets", price: 1880, discountedPrice: 1780 },
+    ]
+    
   },
   {
     id: "product-004",
@@ -455,17 +437,11 @@ export const products: Product[] = [
     tags: ["Slimming", "Energy", "Coffee", "Metabolism"],
     rating: 4.6,
     reviewCount: 112,
-    availableSizes: [
-      {
-        size: "10 sachets",
-        price: 1180,
-      },
-      {
-        size: "30 sachets",
-        price: 3280,
-        discountedPrice: 2980,
-      },
-    ],
+    variants: [
+      { id: "10-sachets", label: "10 Sachets", price: 1180 },
+      { id: "30-sachets", label: "30 Sachets", price: 3280, discountedPrice: 2980 },
+    ]
+    
   },
 ];
 

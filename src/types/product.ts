@@ -4,6 +4,13 @@ export interface Ingredient {
   benefits: string[];
 }
 
+export interface ProductVariant {
+  id: string;              // e.g. "15-sachets" or "60-capsules"
+  label: string;           // e.g. "15 Sachets" or "60 Capsules"
+  price: number;           // Original price
+  discountedPrice?: number; // Optional discounted price
+}
+
 export interface Product {
   id: string;
   slug: string;
@@ -26,11 +33,7 @@ export interface Product {
   tags: string[];
   rating: number;
   reviewCount: number;
-  availableSizes?: {
-    size: string;
-    price: number;
-    discountedPrice?: number;
-  }[];
+  variants: ProductVariant[]; // <-- replaces availableSizes
 }
 
 export interface Testimonial {
@@ -74,4 +77,16 @@ export interface NavItem {
   label: string;
   href: string;
   subItems?: Omit<NavItem, "subItems">[];
+}
+
+export interface CartItem {
+  productId: string;
+  name: string;
+  image: string;
+  variant: {
+    size: string;
+    price: number;
+    discountedPrice?: number;
+  };
+  quantity: number;
 }
