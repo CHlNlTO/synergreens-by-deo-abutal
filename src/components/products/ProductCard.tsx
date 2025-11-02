@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Product } from "../../types/product";
-import AddToCartButton from "./AddToCartButton"; // ✅ Import your existing button
+import AddToCartButton from "./AddToCartButton";
 
 interface ProductCardProps {
   product: Product;
@@ -121,21 +121,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
         {/* Quick shop buttons */}
         {showDetails && (
-  <div className="mt-4 flex flex-col sm:flex-row gap-3">
-    <AddToCartButton
-      product={product}
-      className="flex-1 inline-flex items-center justify-center px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl shadow-md transition-colors"
-    />
-    <Link
-      href="/contact"
-      className="flex-1 inline-flex items-center justify-center px-5 py-2.5 border border-primary-600 text-primary-700 hover:bg-primary-50 font-medium rounded-xl shadow-md transition-colors"
-    >
-      Contact for Bulk
-    </Link>
-  </div>
-)}
-
-
+          <div className="mt-4 flex flex-col sm:flex-row gap-3">
+            <AddToCartButton
+              product={product}
+              className="flex-1 inline-flex items-center justify-center px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl shadow-md transition-colors"
+            />
+            <Link
+              href="/contact"
+              className="flex-1 inline-flex items-center justify-center px-5 py-2.5 border border-primary-600 text-primary-700 hover:bg-primary-50 font-medium rounded-xl shadow-md transition-colors"
+            >
+              Contact for Bulk
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );
